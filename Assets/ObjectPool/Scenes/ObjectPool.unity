@@ -290,6 +290,85 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1372297463}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &383696976
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 383696977}
+  - component: {fileID: 383696979}
+  - component: {fileID: 383696978}
+  m_Layer: 5
+  m_Name: Text (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &383696977
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383696976}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 795477644}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 26.27}
+  m_SizeDelta: {x: 492.3, y: 30}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &383696978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383696976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 14
+    m_FontStyle: 1
+    m_BestFit: 1
+    m_MinSize: 10
+    m_MaxSize: 40
+    m_Alignment: 4
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: 'Left Click : Shoot all turrets'
+--- !u!222 &383696979
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383696976}
+  m_CullTransparentMesh: 1
 --- !u!1001 &447527145
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -298,6 +377,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1460030631903856, guid: a970ba0fc593c9347b1ca8a4e50197f1, type: 3}
+      propertyPath: m_Name
+      value: Catapult
+      objectReference: {fileID: 0}
     - target: {fileID: 1460030631903856, guid: a970ba0fc593c9347b1ca8a4e50197f1, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -339,12 +422,16 @@ PrefabInstance:
       value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 114097961573486468, guid: a970ba0fc593c9347b1ca8a4e50197f1, type: 3}
+      propertyPath: bulletType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114097961573486468, guid: a970ba0fc593c9347b1ca8a4e50197f1, type: 3}
       propertyPath: turretHead
       value: 
       objectReference: {fileID: 1040675132}
     - target: {fileID: 114097961573486468, guid: a970ba0fc593c9347b1ca8a4e50197f1, type: 3}
       propertyPath: turretType
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 114097961573486468, guid: a970ba0fc593c9347b1ca8a4e50197f1, type: 3}
       propertyPath: muzzleEffect
@@ -616,6 +703,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1008092656}
+  - {fileID: 383696977}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -654,17 +742,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   listOfPools:
   - type: 0
-    amount: 0
+    amount: 4
     prefab: {fileID: 1230967522142342, guid: eb167afc8ab53774898a71ad9c87e1e8, type: 3}
     container: {fileID: 580615952}
     pool: []
   - type: 1
-    amount: 0
+    amount: 4
     prefab: {fileID: 1773485284122676, guid: 9e0d59e1858a95d4aafcfc9ef7e94671, type: 3}
     container: {fileID: 199988199}
     pool: []
   - type: 2
-    amount: 1
+    amount: 4
     prefab: {fileID: 1986743744459060, guid: 9487ab9774304a24585b7f05a0cfcf09, type: 3}
     container: {fileID: 18119216}
     pool: []
@@ -693,8 +781,12 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1321377731327022, guid: 52101a1721a4f7b4fa06ca8b586ad5c1, type: 3}
+      propertyPath: m_Name
+      value: Dual
+      objectReference: {fileID: 0}
+    - target: {fileID: 1321377731327022, guid: 52101a1721a4f7b4fa06ca8b586ad5c1, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4268993561700370, guid: 52101a1721a4f7b4fa06ca8b586ad5c1, type: 3}
       propertyPath: m_RootOrder
@@ -731,6 +823,10 @@ PrefabInstance:
     - target: {fileID: 114356927540799652, guid: 52101a1721a4f7b4fa06ca8b586ad5c1, type: 3}
       propertyPath: lockSpeed
       value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114356927540799652, guid: 52101a1721a4f7b4fa06ca8b586ad5c1, type: 3}
+      propertyPath: bulletType
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114356927540799652, guid: 52101a1721a4f7b4fa06ca8b586ad5c1, type: 3}
       propertyPath: turretHead
@@ -1400,7 +1496,7 @@ Camera:
   far clip plane: 200
   field of view: 10
   orthographic: 1
-  orthographic size: 5.5
+  orthographic size: 9
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1440,8 +1536,12 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1545943666229906, guid: 6d4258013fee5bf4594ec920e34e94d6, type: 3}
+      propertyPath: m_Name
+      value: Single
+      objectReference: {fileID: 0}
+    - target: {fileID: 1545943666229906, guid: 6d4258013fee5bf4594ec920e34e94d6, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4881489855263244, guid: 6d4258013fee5bf4594ec920e34e94d6, type: 3}
       propertyPath: m_RootOrder
@@ -1484,9 +1584,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114488249069696938, guid: 6d4258013fee5bf4594ec920e34e94d6, type: 3}
+      propertyPath: bulletType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114488249069696938, guid: 6d4258013fee5bf4594ec920e34e94d6, type: 3}
       propertyPath: turretHead
       value: 
       objectReference: {fileID: 1943569410}
+    - target: {fileID: 114488249069696938, guid: 6d4258013fee5bf4594ec920e34e94d6, type: 3}
+      propertyPath: turretType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 114488249069696938, guid: 6d4258013fee5bf4594ec920e34e94d6, type: 3}
       propertyPath: muzzleEffect
       value: 

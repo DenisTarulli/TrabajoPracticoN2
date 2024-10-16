@@ -1,117 +1,137 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Projectile : MonoBehaviour 
 {
-    public TurretAI.TurretType type = TurretAI.TurretType.Single;
-    public Transform target;
-    public bool lockOn;
-    public float speed = 1;
-    public float turnSpeed = 1;
-    public bool catapult;
+    [Header("Type")]
+    [SerializeField] private TurretAI.TurretType turretType;
+    [SerializeField] private PoolObjectType objectType;
+    [SerializeField] private bool catapult;
 
-    public float knockBack = 0.1f;
-    public float boomTimer = 1;
+    [Header("Stats")]
+    [SerializeField] private float shotSpeed;
+    [SerializeField] private float shotSpeedMultiplier;
+    [SerializeField] private float gravityCompensationMultiplier;
+    [SerializeField] private float turnSpeed;
+    [SerializeField] private float knockback;
 
-    public ParticleSystem explosion;
+    [Header("Explosion")]
+    [SerializeField] private float maxExplosionTimer;
+    [SerializeField] private float explosionTriggerHeight;
+    [SerializeField] private ParticleSystem explosionEffect;
+
+    #region extra fields
+    private bool lockOnTarget;
+    private float explosionTimer;
+    private Transform target;
+    public Transform Target { get => target; set => target = value; }
+    #endregion
 
     private void OnEnable()
     {
+        explosionTimer = maxExplosionTimer;
+
         if (catapult)
         {
-            lockOn = true;
+            lockOnTarget = true;
         }
-
-        if (type == TurretAI.TurretType.Single)
+        if (turretType == TurretAI.TurretType.Single)
         {
-            Vector3 dir = target.position - transform.position;
-            transform.rotation = Quaternion.LookRotation(dir);
+            transform.rotation = Quaternion.LookRotation(GetDirectionToTarget());
         }
     }
 
     private void Update()
     {
-        if (target == null)
+        explosionTimer -= Time.deltaTime;
+
+        if (CheckExplosionConditions())
         {
             Explosion();
             return;
         }
 
-        if (transform.position.y < -0.2F)
+        if (turretType == TurretAI.TurretType.Catapult)
         {
-            Explosion();
-        }
-
-        //boomTimer -= Time.deltaTime;
-        if (boomTimer < 0)
-        {
-            Explosion();
-        }
-
-        if (type == TurretAI.TurretType.Catapult)
-        {
-            if (lockOn)
+            if (lockOnTarget)
             {
-                Vector3 Vo = CalculateCatapult(target.transform.position, transform.position, 1);
+                Vector3 newVelocity = CalculateCatapultProjectileVelocity(target.transform.position, transform.position, 1);
 
-                transform.GetComponent<Rigidbody>().velocity = Vo;
-                lockOn = false;
+                transform.GetComponent<Rigidbody>().velocity = newVelocity;
+                lockOnTarget = false;
             }
-        }else if(type == TurretAI.TurretType.Dual)
+        }
+        else if(turretType == TurretAI.TurretType.Dual)
         {
-            Vector3 dir = target.position - transform.position;
-            //float distThisFrame = speed * Time.deltaTime;
-            Vector3 newDirection = Vector3.RotateTowards(transform.forward, dir, Time.deltaTime * turnSpeed, 0.0f);
+            Vector3 directionToTarget = target.position - transform.position;
+            Vector3 newDirection = Vector3.RotateTowards(transform.forward, directionToTarget, Time.deltaTime * turnSpeed, 0.0f);
             Debug.DrawRay(transform.position, newDirection, Color.red);
 
-            //transform.Translate(dir.normalized * distThisFrame, Space.World);
-            //transform.LookAt(target);
-
-            transform.Translate(Vector3.forward * Time.deltaTime * speed);
+            transform.Translate(shotSpeed * Time.deltaTime * Vector3.forward);
             transform.rotation = Quaternion.LookRotation(newDirection);
 
-        }else if (type == TurretAI.TurretType.Single)
+        }
+        else if (turretType == TurretAI.TurretType.Single)
         {
-            float singleSpeed = speed * Time.deltaTime;
-            transform.Translate(transform.forward * singleSpeed * 2, Space.World);
+            float singleShotSpeed = shotSpeed * Time.deltaTime;
+            transform.Translate(shotSpeedMultiplier * singleShotSpeed * transform.forward, Space.World);
         }
     }
 
-    Vector3 CalculateCatapult(Vector3 target, Vector3 origen, float time)
+    private Vector3 GetDirectionToTarget()
     {
-        Vector3 distance = target - origen;
-        Vector3 distanceXZ = distance;
-        distanceXZ.y = 0;
+        if (target == null)
+            return Vector3.zero;
 
-        float Sy = distance.y;
-        float Sxz = distanceXZ.magnitude;
+        Vector3 newDirection = target.position - transform.position;
 
-        float Vxz = Sxz / time;
-        float Vy = Sy / time + 0.5f * Mathf.Abs(Physics.gravity.y) * time;
+        return newDirection.normalized;
+    }
 
-        Vector3 result = distanceXZ.normalized;
-        result *= Vxz;
-        result.y = Vy;
+    public void SetRotation()
+    {
+        transform.rotation = Quaternion.LookRotation(GetDirectionToTarget());
+    }
+
+    private bool CheckExplosionConditions()
+    {
+        return target == null || transform.position.y < explosionTriggerHeight || explosionTimer < 0;
+    }
+
+    private Vector3 CalculateCatapultProjectileVelocity(Vector3 target, Vector3 origen, float time)
+    {
+        Vector3 distanceToTarget = target - origen;
+        distanceToTarget.y = 0;
+
+        float velocityMultiplier = distanceToTarget.magnitude / time;
+        float yVelocity = gravityCompensationMultiplier * Mathf.Abs(Physics.gravity.y) * time;
+
+        Vector3 result = distanceToTarget.normalized;
+
+        result *= velocityMultiplier;
+        result.y = yVelocity;
 
         return result;
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.transform.tag == "Player")
-        {
-            Vector3 dir = other.transform.position - transform.position;
-            Vector3 knockBackPos = other.transform.position + (dir.normalized * knockBack);
-            knockBackPos.y = 1;
-            other.transform.position = knockBackPos;
-            Explosion();
-        }
-    }
-
     public void Explosion()
     {
-        Instantiate(explosion, transform.position, transform.rotation);
-        PoolManager.Instance.CoolObject(gameObject, PoolObjectType.CatapultBullet);
+        Instantiate(explosionEffect, transform.position, transform.rotation);
+        PoolManager.Instance.CoolObject(gameObject, objectType);
+    }
+
+    private void KnockbackPlayer(Transform player)
+    {
+        Vector3 knockbackDirection = player.position - transform.position;
+        Vector3 playerNewPosition = player.position + (knockbackDirection.normalized * knockback);
+        playerNewPosition.y = 1;
+        player.position = playerNewPosition;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!other.transform.CompareTag("Player")) return;
+
+        KnockbackPlayer(other.transform);
+        Explosion();
     }
 }
