@@ -50,30 +50,17 @@ public class Projectile : MonoBehaviour
             return;
         }
 
-        if (turretType == TurretAI.TurretType.Catapult)
+        switch (turretType)
         {
-            if (lockOnTarget)
-            {
-                Vector3 newVelocity = CalculateCatapultProjectileVelocity(target.transform.position, transform.position, 1);
-
-                transform.GetComponent<Rigidbody>().velocity = newVelocity;
-                lockOnTarget = false;
-            }
-        }
-        else if(turretType == TurretAI.TurretType.Dual)
-        {
-            Vector3 directionToTarget = target.position - transform.position;
-            Vector3 newDirection = Vector3.RotateTowards(transform.forward, directionToTarget, Time.deltaTime * turnSpeed, 0.0f);
-            Debug.DrawRay(transform.position, newDirection, Color.red);
-
-            transform.Translate(shotSpeed * Time.deltaTime * Vector3.forward);
-            transform.rotation = Quaternion.LookRotation(newDirection);
-
-        }
-        else if (turretType == TurretAI.TurretType.Single)
-        {
-            float singleShotSpeed = shotSpeed * Time.deltaTime;
-            transform.Translate(shotSpeedMultiplier * singleShotSpeed * transform.forward, Space.World);
+            case TurretAI.TurretType.Catapult:
+                CatapultBehaviour();
+                break;
+            case TurretAI.TurretType.Dual:
+                DualBehaviour(); 
+                break;
+            case TurretAI.TurretType.Single:
+                SingleBehaviour();
+                break;            
         }
     }
 
@@ -125,6 +112,33 @@ public class Projectile : MonoBehaviour
         Vector3 playerNewPosition = player.position + (knockbackDirection.normalized * knockback);
         playerNewPosition.y = 1;
         player.position = playerNewPosition;
+    }
+    
+    private void CatapultBehaviour()
+    {
+        if (lockOnTarget)
+        {
+            Vector3 newVelocity = CalculateCatapultProjectileVelocity(target.transform.position, transform.position, 1);
+
+            transform.GetComponent<Rigidbody>().velocity = newVelocity;
+            lockOnTarget = false;
+        }
+    }
+
+    private void DualBehaviour()
+    {
+        Vector3 directionToTarget = target.position - transform.position;
+        Vector3 newDirection = Vector3.RotateTowards(transform.forward, directionToTarget, Time.deltaTime * turnSpeed, 0.0f);
+        Debug.DrawRay(transform.position, newDirection, Color.red);
+
+        transform.Translate(shotSpeed * Time.deltaTime * Vector3.forward);
+        transform.rotation = Quaternion.LookRotation(newDirection);
+    }
+
+    private void SingleBehaviour()
+    {
+        float singleShotSpeed = shotSpeed * Time.deltaTime;
+        transform.Translate(shotSpeedMultiplier * singleShotSpeed * transform.forward, Space.World);
     }
 
     private void OnTriggerEnter(Collider other)
